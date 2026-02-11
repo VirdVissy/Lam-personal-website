@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lam — Software Engineer</title>
+<meta name="description" content="Portfolio of Lam, a Software Engineer and Researcher at Boston University specializing in AI/ML and full-stack development.">
+<meta property="og:title" content="Lam — Software Engineer">
+<meta property="og:description" content="CS & Economics at Boston University. Building at the intersection of AI & impact.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -708,6 +713,31 @@ body::after {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
+/* Skip navigation */
+.skip-nav {
+  position: absolute;
+  top: -100%;
+  left: 0;
+  padding: 0.8rem 1.5rem;
+  background: var(--accent);
+  color: var(--bg);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  z-index: 200;
+  transition: top 0.3s;
+}
+
+.skip-nav:focus {
+  top: 0;
+}
+
+/* Globe info text */
+.globe-info-text {
+  color: var(--text-muted);
+  font-weight: 300;
+  line-height: 1.7;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   section { padding: 5rem 1.5rem; }
@@ -723,10 +753,12 @@ body::after {
 </head>
 <body>
 
-<div id="cursor-glow"></div>
-<canvas id="three-canvas"></canvas>
+<a href="#hero" class="skip-nav">Skip to main content</a>
 
-<nav id="navbar">
+<div id="cursor-glow"></div>
+<canvas id="three-canvas" aria-hidden="true"></canvas>
+
+<nav id="navbar" aria-label="Main navigation">
   <div class="nav-logo">lam.dev</div>
   <ul class="nav-links">
     <li><a href="#experience">Experience</a></li>
@@ -736,6 +768,8 @@ body::after {
     <li><a href="#contact">Contact</a></li>
   </ul>
 </nav>
+
+<main>
 
 <!-- HERO -->
 <section id="hero">
@@ -811,7 +845,7 @@ body::after {
 
   <div class="projects-grid">
     <div class="project-card" data-reveal>
-      <div class="project-icon">🗺️</div>
+      <div class="project-icon" role="img" aria-label="Map">🗺️</div>
       <div class="project-title">LineWatch</div>
       <div class="project-desc">
         NYC venue wait-time predictor using real-time and historical data. Combines geospatial analysis with machine learning to help New Yorkers skip the line.
@@ -825,7 +859,7 @@ body::after {
     </div>
 
     <div class="project-card" data-reveal>
-      <div class="project-icon">🎬</div>
+      <div class="project-icon" role="img" aria-label="Movie">🎬</div>
       <div class="project-title">Movie Recommender</div>
       <div class="project-desc">
         Hybrid recommendation engine combining neural collaborative filtering with TF-IDF content features for personalized movie suggestions at scale.
@@ -839,7 +873,7 @@ body::after {
     </div>
 
     <div class="project-card" data-reveal>
-      <div class="project-icon">👗</div>
+      <div class="project-icon" role="img" aria-label="Fashion">👗</div>
       <div class="project-title">AI Fashion Assistant</div>
       <div class="project-desc">
         Full-stack application with AI-powered outfit recommendations. React frontend with FastAPI backend serving intelligent styling suggestions.
@@ -865,29 +899,29 @@ body::after {
   <div class="skills-container">
     <div class="skill-group" data-reveal>
       <div class="skill-group-title">Languages</div>
-      <div class="skill-item">Python <div class="skill-bar-container"><div class="skill-bar" style="width:95%"></div></div></div>
-      <div class="skill-item">JavaScript / TypeScript <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
-      <div class="skill-item">Java <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
-      <div class="skill-item">C <div class="skill-bar-container"><div class="skill-bar" style="width:70%"></div></div></div>
-      <div class="skill-item">SQL <div class="skill-bar-container"><div class="skill-bar" style="width:75%"></div></div></div>
+      <div class="skill-item"><span>Python</span> <div class="skill-bar-container"><div class="skill-bar" style="width:95%"></div></div></div>
+      <div class="skill-item"><span>JavaScript / TypeScript</span> <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item"><span>Java</span> <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
+      <div class="skill-item"><span>C</span> <div class="skill-bar-container"><div class="skill-bar" style="width:70%"></div></div></div>
+      <div class="skill-item"><span>SQL</span> <div class="skill-bar-container"><div class="skill-bar" style="width:75%"></div></div></div>
     </div>
 
     <div class="skill-group" data-reveal>
       <div class="skill-group-title">Frameworks & Tools</div>
-      <div class="skill-item">React / Next.js <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
-      <div class="skill-item">FastAPI / Node.js <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
-      <div class="skill-item">PyTorch <div class="skill-bar-container"><div class="skill-bar" style="width:75%"></div></div></div>
-      <div class="skill-item">PostgreSQL <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
-      <div class="skill-item">Git / GDB <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item"><span>React / Next.js</span> <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item"><span>FastAPI / Node.js</span> <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
+      <div class="skill-item"><span>PyTorch</span> <div class="skill-bar-container"><div class="skill-bar" style="width:75%"></div></div></div>
+      <div class="skill-item"><span>PostgreSQL</span> <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
+      <div class="skill-item"><span>Git / GDB</span> <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
     </div>
 
     <div class="skill-group" data-reveal>
       <div class="skill-group-title">Domains</div>
-      <div class="skill-item">Machine Learning <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
-      <div class="skill-item">LLM Training & Eval <div class="skill-bar-container"><div class="skill-bar" style="width:90%"></div></div></div>
-      <div class="skill-item">Full-Stack Dev <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
-      <div class="skill-item">Data Engineering <div class="skill-bar-container"><div class="skill-bar" style="width:75%"></div></div></div>
-      <div class="skill-item">NLP <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
+      <div class="skill-item"><span>Machine Learning</span> <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item"><span>LLM Training & Eval</span> <div class="skill-bar-container"><div class="skill-bar" style="width:90%"></div></div></div>
+      <div class="skill-item"><span>Full-Stack Dev</span> <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item"><span>Data Engineering</span> <div class="skill-bar-container"><div class="skill-bar" style="width:75%"></div></div></div>
+      <div class="skill-item"><span>NLP</span> <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
     </div>
   </div>
 </section>
@@ -902,10 +936,10 @@ body::after {
 
   <div id="globe-section">
     <div class="globe-content">
-      <canvas id="globe-canvas"></canvas>
+      <canvas id="globe-canvas" aria-label="Interactive 3D globe showing locations in Vietnam, Russia, and the United States"></canvas>
       <div class="globe-info">
         <h3>Three countries,<br>one worldview.</h3>
-        <p style="color: var(--text-muted); font-weight: 300; line-height: 1.7;">Growing up across continents shaped how I build software — with empathy for diverse users, awareness of language barriers, and a drive to create technology that's accessible to everyone.</p>
+        <p class="globe-info-text">Growing up across continents shaped how I build software — with empathy for diverse users, awareness of language barriers, and a drive to create technology that's accessible to everyone.</p>
         <div class="globe-locations">
           <div class="location-item" data-lat="21.0285" data-lng="105.8542">
             <div class="location-dot"></div>
@@ -944,19 +978,19 @@ body::after {
 
   <div class="hobbies-grid">
     <div class="hobby-card" data-reveal>
-      <div class="hobby-emoji">📸</div>
+      <div class="hobby-emoji" role="img" aria-label="Camera">📸</div>
       <div class="hobby-title">Photography & Film</div>
       <div class="hobby-desc">Content Creation Director at BU Film & Radio, leading a team of 5+ photographers. I see the world through a lens — literally and figuratively — and bring that visual thinking into everything I design and build.</div>
     </div>
 
     <div class="hobby-card" data-reveal>
-      <div class="hobby-emoji">🌍</div>
+      <div class="hobby-emoji" role="img" aria-label="Globe">🌍</div>
       <div class="hobby-title">Community Impact</div>
       <div class="hobby-desc">Passionate about helping underrepresented communities navigate complex systems and language barriers. Tutoring work that led to a student's math olympiad placement showed me the power of patient, dedicated mentorship.</div>
     </div>
 
     <div class="hobby-card" data-reveal>
-      <div class="hobby-emoji">🗣️</div>
+      <div class="hobby-emoji" role="img" aria-label="Speaking">🗣️</div>
       <div class="hobby-title">Multilingual</div>
       <div class="hobby-desc">Speaking multiple languages across Vietnamese, Russian, and English isn't just a personal trait — it's a superpower for building products that work for everyone, everywhere.</div>
     </div>
@@ -969,17 +1003,19 @@ body::after {
   <p class="contact-subtitle">I'm actively looking for Summer 2026 software engineering internships. Let's connect.</p>
   <div class="contact-links">
     <a href="mailto:lam@example.com" class="contact-link">Email ↗</a>
-    <a href="https://linkedin.com" class="contact-link" target="_blank">LinkedIn ↗</a>
-    <a href="https://github.com" class="contact-link" target="_blank">GitHub ↗</a>
+    <a href="https://linkedin.com" class="contact-link" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+    <a href="https://github.com" class="contact-link" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
   </div>
 </section>
+
+</main>
 
 <footer>
   DESIGNED & BUILT BY LAM — 2026
 </footer>
 
 <!-- Three.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha512-dLxUelApnYxpLt6K2iomGngnHO83iUvZytA3YjDUCjT0HDOHKXnVYdf3hU4JjM8uEhxf9nD1/ey98U3t2vZ0qQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 // ==========================================
 // THREE.JS BACKGROUND PARTICLE FIELD

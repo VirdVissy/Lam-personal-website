@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lam — Software Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --bg-elevated: #12121a;
+  --bg-card: #16161f;
+  --text: #e8e6e3;
+  --text-muted: #8a8a96;
+  --accent: #00e5c7;
+  --accent-glow: rgba(0, 229, 199, 0.15);
+  --amber: #f5a623;
+  --amber-glow: rgba(245, 166, 35, 0.12);
+  --gradient-1: linear-gradient(135deg, #00e5c7, #00b4d8);
+  --gradient-2: linear-gradient(135deg, #f5a623, #ff6b6b);
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* Custom cursor follower */
+#cursor-glow {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,229,199,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s;
+}
+
+/* Three.js canvas */
+#three-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Navigation */
+nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  padding: 1.2rem 3rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px);
+  background: rgba(10,10,15,0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+nav.hidden { transform: translateY(-100%); }
+
+.nav-logo {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: color 0.3s, text-shadow 0.3s;
+  position: relative;
+}
+
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--accent);
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-links a:hover { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+.nav-links a:hover::after { width: 100%; }
+
+/* Sections */
+section {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding: 8rem 3rem;
+}
+
+/* Hero */
+#hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding-left: 8vw;
+}
+
+.hero-overline {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.8s 0.3s forwards;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 8vw, 8rem);
+  font-weight: 400;
+  line-height: 1.05;
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 1s 0.5s forwards;
+}
+
+.hero-title em {
+  font-style: italic;
+  background: var(--gradient-1);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subtitle {
+  font-size: 1.15rem;
+  color: var(--text-muted);
+  max-width: 520px;
+  line-height: 1.7;
+  font-weight: 300;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 1.2rem;
+  margin-top: 2.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.8s 1s forwards;
+}
+
+.btn {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0.9rem 2rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 30px rgba(0,229,199,0.3);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,0.12);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+
+.btn-ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.4s forwards;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: scrollPulse 2s infinite;
+}
+
+/* Section headers */
+.section-header {
+  margin-bottom: 4rem;
+}
+
+.section-number {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+  letter-spacing: 3px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  margin-top: 0.5rem;
+  font-weight: 400;
+}
+
+.section-line {
+  width: 60px;
+  height: 2px;
+  background: var(--gradient-1);
+  margin-top: 1rem;
+}
+
+/* Experience cards */
+.experience-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  max-width: 900px;
+}
+
+.exp-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px));
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.exp-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.exp-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--gradient-1);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.exp-card:hover {
+  border-color: rgba(0,229,199,0.15);
+  transform: translateX(8px);
+  box-shadow: -4px 0 30px rgba(0,229,199,0.05);
+}
+
+.exp-card:hover::before { opacity: 1; }
+
+.exp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.exp-role {
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.exp-company {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.exp-date {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+
+.exp-desc {
+  color: var(--text-muted);
+  line-height: 1.7;
+  font-size: 0.95rem;
+  font-weight: 300;
+}
+
+.exp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.2rem;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(0,229,199,0.08);
+  color: var(--accent);
+  letter-spacing: 1px;
+  border: 1px solid rgba(0,229,199,0.15);
+}
+
+/* Projects */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+}
+
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: translateY(40px);
+}
+
+.project-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.project-card:hover {
+  border-color: rgba(245,166,35,0.2);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.project-icon {
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
+}
+
+.project-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.8rem;
+}
+
+.project-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 1.2rem;
+}
+
+.tag-amber {
+  background: var(--amber-glow);
+  color: var(--amber);
+  border-color: rgba(245,166,35,0.2);
+}
+
+/* Skills */
+#skills {
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+}
+
+.skills-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+}
+
+.skill-group {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.skill-group.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skill-group-title {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.skill-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 300;
+  transition: color 0.3s;
+}
+
+.skill-item:hover { color: var(--text); }
+
+.skill-bar-container {
+  width: 80px;
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.skill-bar {
+  height: 100%;
+  background: var(--gradient-1);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.skill-group.visible .skill-bar { transform: scaleX(1); }
+
+/* Hobbies & Extracurriculars */
+.hobbies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+}
+
+.hobby-card {
+  background: var(--bg-card);
+  border: 1px solid rgba(255,255,255,0.05);
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hobby-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hobby-card:hover {
+  border-color: rgba(0,229,199,0.15);
+  transform: translateY(-4px);
+}
+
+.hobby-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hobby-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 0.6rem;
+}
+
+.hobby-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* Interactive 3D Globe Section */
+#globe-section {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  padding: 4rem 3rem;
+}
+
+.globe-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  max-width: 1100px;
+  align-items: center;
+}
+
+#globe-canvas {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 450px;
+  cursor: grab;
+}
+
+#globe-canvas:active { cursor: grabbing; }
+
+.globe-info h3 {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.globe-locations {
+  margin-top: 1.5rem;
+}
+
+.location-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.location-item:hover {
+  padding-left: 0.5rem;
+  color: var(--accent);
+}
+
+.location-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  transition: box-shadow 0.3s;
+}
+
+.location-item:hover .location-dot {
+  box-shadow: 0 0 12px var(--accent);
+}
+
+.location-name {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.location-context {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 300;
+}
+
+/* Contact */
+#contact {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.contact-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  margin-bottom: 1rem;
+}
+
+.contact-title em {
+  font-style: italic;
+  background: var(--gradient-2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.contact-subtitle {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+  font-weight: 300;
+  margin-bottom: 2.5rem;
+  max-width: 500px;
+}
+
+.contact-links {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.contact-link {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  letter-spacing: 1px;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: all 0.3s;
+}
+
+.contact-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px rgba(0,229,199,0.1);
+}
+
+/* Footer */
+footer {
+  padding: 2rem 3rem;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  letter-spacing: 2px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+
+/* Animations */
+@keyframes fadeUp {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/* Grain overlay */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  section { padding: 5rem 1.5rem; }
+  #hero { padding-left: 1.5rem; }
+  nav { padding: 1rem 1.5rem; }
+  .nav-links { gap: 1.2rem; }
+  .nav-links a { font-size: 0.65rem; }
+  .globe-content { grid-template-columns: 1fr; }
+  #globe-canvas { max-width: 300px; margin: 0 auto; }
+  .projects-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor-glow"></div>
+<canvas id="three-canvas"></canvas>
+
+<nav id="navbar">
+  <div class="nav-logo">lam.dev</div>
+  <ul class="nav-links">
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#world">World</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-overline">Software Engineer · Researcher · Creator</div>
+  <h1 class="hero-title">Building at the<br>intersection of<br><em>AI & impact.</em></h1>
+  <p class="hero-subtitle">CS & Economics at Boston University. I train LLMs, build full-stack products, and use technology to solve problems that matter — from mapping knowledge gaps in AI benchmarks to predicting real-time venue crowds.</p>
+  <div class="hero-cta">
+    <a href="#experience" class="btn btn-primary">Explore my work ↓</a>
+    <a href="#contact" class="btn btn-ghost">Get in touch</a>
+  </div>
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="section-header">
+    <div class="section-number">01 — EXPERIENCE</div>
+    <h2 class="section-title">Where I've built things</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="experience-grid">
+    <div class="exp-card" data-reveal>
+      <div class="exp-header">
+        <div>
+          <div class="exp-role">Software Engineer Intern</div>
+          <div class="exp-company">HeyU — Ho Chi Minh City, Vietnam</div>
+        </div>
+        <div class="exp-date">JUN — AUG 2025</div>
+      </div>
+      <div class="exp-desc">
+        Trained proprietary LLMs on NVIDIA H100 infrastructure, processing 50GB+ datasets to achieve a 20% benchmark performance improvement. Designed custom tokenization pipelines that boosted Vietnamese language capabilities by 10%, directly impacting millions of users across the platform.
+      </div>
+      <div class="exp-tags">
+        <span class="tag">LLM Training</span>
+        <span class="tag">NVIDIA H100</span>
+        <span class="tag">NLP</span>
+        <span class="tag">Python</span>
+        <span class="tag">Tokenization</span>
+      </div>
+    </div>
+
+    <div class="exp-card" data-reveal>
+      <div class="exp-header">
+        <div>
+          <div class="exp-role">Undergraduate Research Assistant</div>
+          <div class="exp-company">Boston University — Prof. Chang Xiao</div>
+        </div>
+        <div class="exp-date">2024 — PRESENT</div>
+      </div>
+      <div class="exp-desc">
+        Analyzing LLM benchmark coverage by mapping evaluation datasets to Dewey Decimal Classification categories, identifying systematic knowledge domain gaps across leading models. Research aims to improve how we measure and understand AI capabilities.
+      </div>
+      <div class="exp-tags">
+        <span class="tag">LLM Evaluation</span>
+        <span class="tag">Research</span>
+        <span class="tag">Data Analysis</span>
+        <span class="tag">Classification</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="section-header">
+    <div class="section-number">02 — PROJECTS</div>
+    <h2 class="section-title">Things I've shipped</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="projects-grid">
+    <div class="project-card" data-reveal>
+      <div class="project-icon">🗺️</div>
+      <div class="project-title">LineWatch</div>
+      <div class="project-desc">
+        NYC venue wait-time predictor using real-time and historical data. Combines geospatial analysis with machine learning to help New Yorkers skip the line.
+      </div>
+      <div class="project-tags">
+        <span class="tag tag-amber">Next.js</span>
+        <span class="tag tag-amber">PostgreSQL</span>
+        <span class="tag tag-amber">PostGIS</span>
+        <span class="tag tag-amber">LightGBM</span>
+      </div>
+    </div>
+
+    <div class="project-card" data-reveal>
+      <div class="project-icon">🎬</div>
+      <div class="project-title">Movie Recommender</div>
+      <div class="project-desc">
+        Hybrid recommendation engine combining neural collaborative filtering with TF-IDF content features for personalized movie suggestions at scale.
+      </div>
+      <div class="project-tags">
+        <span class="tag tag-amber">PyTorch</span>
+        <span class="tag tag-amber">TF-IDF</span>
+        <span class="tag tag-amber">NCF</span>
+        <span class="tag tag-amber">Python</span>
+      </div>
+    </div>
+
+    <div class="project-card" data-reveal>
+      <div class="project-icon">👗</div>
+      <div class="project-title">AI Fashion Assistant</div>
+      <div class="project-desc">
+        Full-stack application with AI-powered outfit recommendations. React frontend with FastAPI backend serving intelligent styling suggestions.
+      </div>
+      <div class="project-tags">
+        <span class="tag tag-amber">React</span>
+        <span class="tag tag-amber">FastAPI</span>
+        <span class="tag tag-amber">AI/ML</span>
+        <span class="tag tag-amber">Full-Stack</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-header">
+    <div class="section-number">03 — SKILLS</div>
+    <h2 class="section-title">My toolkit</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="skills-container">
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">Languages</div>
+      <div class="skill-item">Python <div class="skill-bar-container"><div class="skill-bar" style="width:95%"></div></div></div>
+      <div class="skill-item">JavaScript / TypeScript <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item">Java <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
+      <div class="skill-item">C <div class="skill-bar-container"><div class="skill-bar" style="width:70%"></div></div></div>
+      <div class="skill-item">SQL <div class="skill-bar-container"><div class="skill-bar" style="width:75%"></div></div></div>
+    </div>
+
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">Frameworks & Tools</div>
+      <div class="skill-item">React / Next.js <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item">FastAPI / Node.js <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
+      <div class="skill-item">PyTorch <div class="skill-bar-container"><div class="skill-bar" style="width:75%"></div></div></div>
+      <div class="skill-item">PostgreSQL <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
+      <div class="skill-item">Git / GDB <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+    </div>
+
+    <div class="skill-group" data-reveal>
+      <div class="skill-group-title">Domains</div>
+      <div class="skill-item">Machine Learning <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item">LLM Training & Eval <div class="skill-bar-container"><div class="skill-bar" style="width:90%"></div></div></div>
+      <div class="skill-item">Full-Stack Dev <div class="skill-bar-container"><div class="skill-bar" style="width:85%"></div></div></div>
+      <div class="skill-item">Data Engineering <div class="skill-bar-container"><div class="skill-bar" style="width:75%"></div></div></div>
+      <div class="skill-item">NLP <div class="skill-bar-container"><div class="skill-bar" style="width:80%"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- GLOBE / WORLD -->
+<section id="world">
+  <div class="section-header">
+    <div class="section-number">04 — WORLD</div>
+    <h2 class="section-title">A global perspective</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div id="globe-section">
+    <div class="globe-content">
+      <canvas id="globe-canvas"></canvas>
+      <div class="globe-info">
+        <h3>Three countries,<br>one worldview.</h3>
+        <p style="color: var(--text-muted); font-weight: 300; line-height: 1.7;">Growing up across continents shaped how I build software — with empathy for diverse users, awareness of language barriers, and a drive to create technology that's accessible to everyone.</p>
+        <div class="globe-locations">
+          <div class="location-item" data-lat="21.0285" data-lng="105.8542">
+            <div class="location-dot"></div>
+            <div>
+              <div class="location-name">🇻🇳 Vietnam</div>
+              <div class="location-context">Where it all started</div>
+            </div>
+          </div>
+          <div class="location-item" data-lat="55.7558" data-lng="37.6173">
+            <div class="location-dot"></div>
+            <div>
+              <div class="location-name">🇷🇺 Russia</div>
+              <div class="location-context">Broadened my perspective</div>
+            </div>
+          </div>
+          <div class="location-item" data-lat="42.3601" data-lng="-71.0589">
+            <div class="location-dot"></div>
+            <div>
+              <div class="location-name">🇺🇸 United States</div>
+              <div class="location-context">Boston University — building the future</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOBBIES & EXTRACURRICULARS -->
+<section id="hobbies">
+  <div class="section-header">
+    <div class="section-number">05 — BEYOND CODE</div>
+    <h2 class="section-title">What drives me</h2>
+    <div class="section-line"></div>
+  </div>
+
+  <div class="hobbies-grid">
+    <div class="hobby-card" data-reveal>
+      <div class="hobby-emoji">📸</div>
+      <div class="hobby-title">Photography & Film</div>
+      <div class="hobby-desc">Content Creation Director at BU Film & Radio, leading a team of 5+ photographers. I see the world through a lens — literally and figuratively — and bring that visual thinking into everything I design and build.</div>
+    </div>
+
+    <div class="hobby-card" data-reveal>
+      <div class="hobby-emoji">🌍</div>
+      <div class="hobby-title">Community Impact</div>
+      <div class="hobby-desc">Passionate about helping underrepresented communities navigate complex systems and language barriers. Tutoring work that led to a student's math olympiad placement showed me the power of patient, dedicated mentorship.</div>
+    </div>
+
+    <div class="hobby-card" data-reveal>
+      <div class="hobby-emoji">🗣️</div>
+      <div class="hobby-title">Multilingual</div>
+      <div class="hobby-desc">Speaking multiple languages across Vietnamese, Russian, and English isn't just a personal trait — it's a superpower for building products that work for everyone, everywhere.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-title">Let's build<br>something <em>great.</em></div>
+  <p class="contact-subtitle">I'm actively looking for Summer 2026 software engineering internships. Let's connect.</p>
+  <div class="contact-links">
+    <a href="mailto:lam@example.com" class="contact-link">Email ↗</a>
+    <a href="https://linkedin.com" class="contact-link" target="_blank">LinkedIn ↗</a>
+    <a href="https://github.com" class="contact-link" target="_blank">GitHub ↗</a>
+  </div>
+</section>
+
+<footer>
+  DESIGNED & BUILT BY LAM — 2026
+</footer>
+
+<!-- Three.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ==========================================
+// THREE.JS BACKGROUND PARTICLE FIELD
+// ==========================================
+(function() {
+  const canvas = document.getElementById('three-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 50;
+
+  // Particles
+  const particleCount = 1200;
+  const positions = new Float32Array(particleCount * 3);
+  const velocities = new Float32Array(particleCount * 3);
+  const sizes = new Float32Array(particleCount);
+
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 100;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 60;
+    velocities[i * 3] = (Math.random() - 0.5) * 0.01;
+    velocities[i * 3 + 1] = (Math.random() - 0.5) * 0.01;
+    velocities[i * 3 + 2] = (Math.random() - 0.5) * 0.005;
+    sizes[i] = Math.random() * 2 + 0.5;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+  const material = new THREE.PointsMaterial({
+    size: 1.2,
+    color: 0x00e5c7,
+    transparent: true,
+    opacity: 0.4,
+    blending: THREE.AdditiveBlending,
+    sizeAttenuation: true
+  });
+
+  const particles = new THREE.Points(geometry, material);
+  scene.add(particles);
+
+  // Connection lines
+  const lineGeometry = new THREE.BufferGeometry();
+  const linePositions = new Float32Array(particleCount * particleCount * 3 * 2);
+  lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+  const lineMaterial = new THREE.LineBasicMaterial({
+    color: 0x00e5c7,
+    transparent: true,
+    opacity: 0.06,
+    blending: THREE.AdditiveBlending
+  });
+  const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+  scene.add(lines);
+
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+  });
+
+  // Scroll-reactive
+  let scrollY = 0;
+  window.addEventListener('scroll', () => { scrollY = window.scrollY; });
+
+  function animate() {
+    requestAnimationFrame(animate);
+
+    const posAttr = geometry.attributes.position;
+    const arr = posAttr.array;
+
+    for (let i = 0; i < particleCount; i++) {
+      arr[i * 3] += velocities[i * 3];
+      arr[i * 3 + 1] += velocities[i * 3 + 1];
+      arr[i * 3 + 2] += velocities[i * 3 + 2];
+
+      if (Math.abs(arr[i * 3]) > 50) velocities[i * 3] *= -1;
+      if (Math.abs(arr[i * 3 + 1]) > 50) velocities[i * 3 + 1] *= -1;
+      if (Math.abs(arr[i * 3 + 2]) > 30) velocities[i * 3 + 2] *= -1;
+    }
+    posAttr.needsUpdate = true;
+
+    // Update connection lines (only nearby particles)
+    let lineIndex = 0;
+    const linePosArr = lineGeometry.attributes.position.array;
+    const maxDist = 8;
+    const checkLimit = Math.min(particleCount, 200);
+
+    for (let i = 0; i < checkLimit; i++) {
+      for (let j = i + 1; j < checkLimit; j++) {
+        const dx = arr[i * 3] - arr[j * 3];
+        const dy = arr[i * 3 + 1] - arr[j * 3 + 1];
+        const dz = arr[i * 3 + 2] - arr[j * 3 + 2];
+        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+        if (dist < maxDist) {
+          linePosArr[lineIndex++] = arr[i * 3];
+          linePosArr[lineIndex++] = arr[i * 3 + 1];
+          linePosArr[lineIndex++] = arr[i * 3 + 2];
+          linePosArr[lineIndex++] = arr[j * 3];
+          linePosArr[lineIndex++] = arr[j * 3 + 1];
+          linePosArr[lineIndex++] = arr[j * 3 + 2];
+        }
+      }
+    }
+    for (let i = lineIndex; i < linePosArr.length; i++) linePosArr[i] = 0;
+    lineGeometry.attributes.position.needsUpdate = true;
+    lineGeometry.setDrawRange(0, lineIndex / 3);
+
+    camera.position.x += (mouseX * 3 - camera.position.x) * 0.02;
+    camera.position.y += (mouseY * 2 - camera.position.y) * 0.02;
+    camera.rotation.x = scrollY * 0.0001;
+    particles.rotation.y += 0.0003;
+
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+})();
+
+// ==========================================
+// 3D INTERACTIVE GLOBE
+// ==========================================
+(function() {
+  const canvas = document.getElementById('globe-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+  camera.position.z = 3.2;
+
+  function resize() {
+    const size = Math.min(canvas.parentElement.offsetWidth, 450);
+    renderer.setSize(size, size);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Globe wireframe
+  const globeGeo = new THREE.SphereGeometry(1, 32, 32);
+  const globeMat = new THREE.MeshBasicMaterial({
+    color: 0x00e5c7,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.12
+  });
+  const globe = new THREE.Mesh(globeGeo, globeMat);
+  scene.add(globe);
+
+  // Solid inner sphere
+  const innerGeo = new THREE.SphereGeometry(0.98, 32, 32);
+  const innerMat = new THREE.MeshBasicMaterial({
+    color: 0x0a0a0f,
+    transparent: true,
+    opacity: 0.9
+  });
+  scene.add(new THREE.Mesh(innerGeo, innerMat));
+
+  // Equator ring
+  const ringGeo = new THREE.RingGeometry(1.15, 1.17, 64);
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: 0x00e5c7,
+    transparent: true,
+    opacity: 0.15,
+    side: THREE.DoubleSide
+  });
+  const ring = new THREE.Mesh(ringGeo, ringMat);
+  ring.rotation.x = Math.PI / 2;
+  scene.add(ring);
+
+  // Location markers
+  const locations = [
+    { lat: 21.0285, lng: 105.8542, label: 'Vietnam' },
+    { lat: 55.7558, lng: 37.6173, label: 'Russia' },
+    { lat: 42.3601, lng: -71.0589, label: 'Boston' }
+  ];
+
+  function latLngToVector3(lat, lng, radius) {
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lng + 180) * (Math.PI / 180);
+    return new THREE.Vector3(
+      -radius * Math.sin(phi) * Math.cos(theta),
+      radius * Math.cos(phi),
+      radius * Math.sin(phi) * Math.sin(theta)
+    );
+  }
+
+  const markerGroup = new THREE.Group();
+  locations.forEach(loc => {
+    const pos = latLngToVector3(loc.lat, loc.lng, 1.02);
+    // Glowing dot
+    const dotGeo = new THREE.SphereGeometry(0.035, 16, 16);
+    const dotMat = new THREE.MeshBasicMaterial({ color: 0x00e5c7 });
+    const dot = new THREE.Mesh(dotGeo, dotMat);
+    dot.position.copy(pos);
+    markerGroup.add(dot);
+
+    // Pulse ring
+    const pulseGeo = new THREE.RingGeometry(0.04, 0.06, 16);
+    const pulseMat = new THREE.MeshBasicMaterial({
+      color: 0x00e5c7,
+      transparent: true,
+      opacity: 0.5,
+      side: THREE.DoubleSide
+    });
+    const pulse = new THREE.Mesh(pulseGeo, pulseMat);
+    pulse.position.copy(pos);
+    pulse.lookAt(pos.clone().multiplyScalar(2));
+    pulse.userData = { baseScale: 1 };
+    markerGroup.add(pulse);
+  });
+  scene.add(markerGroup);
+
+  // Arcs between locations
+  function createArc(start, end) {
+    const points = [];
+    for (let i = 0; i <= 50; i++) {
+      const t = i / 50;
+      const p = new THREE.Vector3().lerpVectors(start, end, t);
+      const elevation = 1 + 0.3 * Math.sin(Math.PI * t);
+      p.normalize().multiplyScalar(elevation);
+      points.push(p);
+    }
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    const mat = new THREE.LineBasicMaterial({
+      color: 0xf5a623,
+      transparent: true,
+      opacity: 0.4
+    });
+    return new THREE.Line(geo, mat);
+  }
+
+  const v = latLngToVector3(21.0285, 105.8542, 1);
+  const r = latLngToVector3(55.7558, 37.6173, 1);
+  const b = latLngToVector3(42.3601, -71.0589, 1);
+  scene.add(createArc(v, r));
+  scene.add(createArc(r, b));
+  scene.add(createArc(v, b));
+
+  // Mouse drag rotation
+  let isDragging = false;
+  let prevMouse = { x: 0, y: 0 };
+  let targetRotY = 0, targetRotX = 0;
+
+  canvas.addEventListener('mousedown', (e) => { isDragging = true; prevMouse = { x: e.clientX, y: e.clientY }; });
+  canvas.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    targetRotY += (e.clientX - prevMouse.x) * 0.005;
+    targetRotX += (e.clientY - prevMouse.y) * 0.005;
+    targetRotX = Math.max(-1, Math.min(1, targetRotX));
+    prevMouse = { x: e.clientX, y: e.clientY };
+  });
+  canvas.addEventListener('mouseup', () => { isDragging = false; });
+  canvas.addEventListener('mouseleave', () => { isDragging = false; });
+
+  // Touch support
+  canvas.addEventListener('touchstart', (e) => { isDragging = true; prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY }; });
+  canvas.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    targetRotY += (e.touches[0].clientX - prevMouse.x) * 0.005;
+    targetRotX += (e.touches[0].clientY - prevMouse.y) * 0.005;
+    targetRotX = Math.max(-1, Math.min(1, targetRotX));
+    prevMouse = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }, { passive: false });
+  canvas.addEventListener('touchend', () => { isDragging = false; });
+
+  // Location item click → rotate globe
+  document.querySelectorAll('.location-item').forEach((item, i) => {
+    item.addEventListener('click', () => {
+      const loc = locations[i];
+      const target = latLngToVector3(loc.lat, loc.lng, 1);
+      targetRotY = Math.atan2(target.x, target.z);
+      targetRotX = -Math.asin(target.y);
+    });
+  });
+
+  let time = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    time += 0.016;
+
+    if (!isDragging) targetRotY += 0.002;
+
+    globe.rotation.y += (targetRotY - globe.rotation.y) * 0.05;
+    globe.rotation.x += (targetRotX - globe.rotation.x) * 0.05;
+    markerGroup.rotation.y = globe.rotation.y;
+    markerGroup.rotation.x = globe.rotation.x;
+
+    // Pulse animation
+    markerGroup.children.forEach(child => {
+      if (child.userData.baseScale !== undefined) {
+        const s = 1 + 0.5 * Math.sin(time * 2);
+        child.scale.set(s, s, s);
+        child.material.opacity = 0.5 * (1 - (s - 1));
+      }
+    });
+
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+// ==========================================
+// SCROLL REVEAL ANIMATIONS
+// ==========================================
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, i) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, i * 100);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('[data-reveal]').forEach(el => observer.observe(el));
+
+// ==========================================
+// CURSOR GLOW FOLLOW
+// ==========================================
+const cursorGlow = document.getElementById('cursor-glow');
+document.addEventListener('mousemove', (e) => {
+  cursorGlow.style.left = e.clientX + 'px';
+  cursorGlow.style.top = e.clientY + 'px';
+});
+
+// ==========================================
+// NAVBAR HIDE/SHOW ON SCROLL
+// ==========================================
+let lastScroll = 0;
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  const current = window.scrollY;
+  if (current > lastScroll && current > 100) {
+    navbar.classList.add('hidden');
+  } else {
+    navbar.classList.remove('hidden');
+  }
+  lastScroll = current;
+});
+</script>
+</body>
+</html>
